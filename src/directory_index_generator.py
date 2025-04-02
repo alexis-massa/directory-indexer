@@ -6,7 +6,7 @@ from tkinter import messagebox
 import pandas as pd
 from settings import Settings  # Assuming Settings is in a separate file
 from exception_catcher import exception_catcher
-
+from openpyxl.styles import Font
 
 class DirectoryIndexUI:
     def __init__(self, root):
@@ -59,7 +59,7 @@ class DirectoryIndexUI:
     @exception_catcher
     def index_directory(self):
         """Indexes the directory and saves the result as an Excel file."""
-
+        
         # Retrieve and validate settings
         self.settings.in_directory = os.path.abspath(self.in_directory_var.get())
         self.settings.extensions = self.extensions_var.get()
@@ -106,7 +106,7 @@ class DirectoryIndexUI:
 
         # Convert to DataFrame and save to Excel
         df = pd.DataFrame(data, columns=["Name", "Path", "Sub-folder Level", "Type"])
-
+        
         # Now prepare the second sheet (Settings info)
         settings_data = [
             ["Input Directory", self.settings.in_directory],
@@ -115,43 +115,45 @@ class DirectoryIndexUI:
             ["Timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S")],
             ["Files Count", files_count],
             ["Folders Count", folders_count],
-            ["Total Entries", files_count + folders_count],
+            ["Total Entries", files_count + folders_count]
         ]
-
+        
         settings_df = pd.DataFrame(settings_data, columns=["Setting Name", "Value"])
 
         # Excel writer to handle multiple sheets (use openpyxl engine)
         output_file = os.path.join(self.settings.out_path, "directory_index.xlsx")
-
-        with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
+        
+        with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
             # Write the first sheet (index of files/folders)
-            df.to_excel(writer, sheet_name="Index", index=False)
-
+            df.to_excel(writer, sheet_name='Index', index=False)
+            
             # Write the second sheet (settings)
-            settings_df.to_excel(writer, sheet_name="Settings", index=False, header=False)
-
+            settings_df.to_excel(writer, sheet_name='Infos', index=False, header=False)
+            
             # Access the openpyxl workbook and sheets for formatting
             workbook = writer.book
-
+            
             # Formatting for Settings sheet
-            settings_sheet = writer.sheets["Settings"]
-            settings_sheet.column_dimensions["A"].width = 25  # Adjust column width for Setting Name
-            settings_sheet.column_dimensions["B"].width = 40  # Adjust column width for Value
-
+            settings_sheet = writer.sheets['Settings']
+            settings_sheet.column_dimensions['A'].width = 25  # Adjust column width for Setting Name
+            settings_sheet.column_dimensions['B'].width = 40  # Adjust column width for Value
+            
             # Formatting for Index sheet
-            index_sheet = writer.sheets["Index"]
-            index_sheet.column_dimensions["A"].width = 30  # Adjust column width for Name
-            index_sheet.column_dimensions["B"].width = 50  # Adjust column width for Path
-            index_sheet.column_dimensions["C"].width = 20  # Adjust column width for Sub-folder Level
-            index_sheet.column_dimensions["D"].width = 15  # Adjust column width for Type
+            index_sheet = writer.sheets['Index']
+            index_sheet.column_dimensions['A'].width = 30  # Adjust column width for Name
+            index_sheet.column_dimensions['B'].width = 50  # Adjust column width for Path
+            index_sheet.column_dimensions['C'].width = 20  # Adjust column width for Sub-folder Level
+            index_sheet.column_dimensions['D'].width = 15  # Adjust column width for Type
 
             # Bold header formatting
-            from openpyxl.styles import Font
+            for cell in index_sheet[1]:  # First row
+                cell.font = Font(bold=True)
 
-            for cell in settings_sheet[1]:
-                cell.font = Font(bold=True)
-            for cell in index_sheet[1]:
-                cell.font = Font(bold=True)
+            # === Apply Filtering & Sorting ===
+            index_sheet.auto_filter.ref = index_sheet.dimensions  # Enable filter on all data
+
+            # === Freeze the header row ===
+            index_sheet.freeze_panes = "A2"  # Freeze the first row (header)
 
         # Show success notification
         messagebox.showinfo("Success", f"Indexing complete.\nFile saved to: {output_file}")
