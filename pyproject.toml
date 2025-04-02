@@ -1,0 +1,14 @@
+[tool.ruff]
+target-version = "py313"
+line-length = 150
+
+[tool.ruff.mccabe]
+max-complexity = 15
+
+[tool.ruff.isort]
+force-single-line = true
+force-sort-within-sections = true
+combine-as-imports = true
+
+[tool.ruff.pydocstyle]
+convention = "google"
