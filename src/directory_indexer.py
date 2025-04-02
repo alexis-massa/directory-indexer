@@ -62,7 +62,7 @@ class DirectoryIndexUI:
     @exception_catcher
     def index_directory(self):
         """Indexes the directory and saves the result as an Excel file."""
-
+        
         # Retrieve and validate settings
         self.settings.in_directory = os.path.abspath(self.in_directory_var.get())
         self.settings.extensions = self.extensions_var.get()
@@ -109,7 +109,7 @@ class DirectoryIndexUI:
 
         # Convert to DataFrame and save to Excel
         df = pd.DataFrame(data, columns=["Name", "Path", "Sub-folder Level", "Type"])
-
+        
         # Now prepare the second sheet (Settings info)
         settings_data = [
             ["Input Directory", self.settings.in_directory],
@@ -118,9 +118,9 @@ class DirectoryIndexUI:
             ["Timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S")],
             ["Files Count", files_count],
             ["Folders Count", folders_count],
-            ["Total Entries", files_count + folders_count],
+            ["Total Entries", files_count + folders_count]
         ]
-
+        
         settings_df = pd.DataFrame(settings_data, columns=["Setting Name", "Value"])
 
         # Excel writer to handle multiple sheets (use openpyxl engine)

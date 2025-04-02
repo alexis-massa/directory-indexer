@@ -25,7 +25,7 @@ jobs:
         run: pip install pyinstaller
 
       - name: Build Executable
-        run: pyinstaller --onefile --noconsole src/directory_indexer.py
+        run: pyinstaller --onefile --noconsole --name directory_indexer src/directory_indexer.py
 
       - name: Upload Executable
         uses: actions/upload-artifact@v4
@@ -49,16 +49,16 @@ jobs:
         run: pip install pyinstaller
 
       - name: Build Executable
-        run: pyinstaller --onefile --name directory_indexer src/directory_indexer.py
+        run: pyinstaller --onefile --name directory_indexer-linux src/directory_indexer.py
 
       - name: Upload Executable
         uses: actions/upload-artifact@v4
         with:
           name: directory_indexer-linux
-          path: dist/directory_indexer
+          path: dist/directory_indexer-linux
 
   # Step 3: Convert Markdown to PDF
-  convert-pdf:
+  user-manual-pdf:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -79,97 +79,29 @@ jobs:
           name: user-manual.pdf
           path: user-manual.pdf
 
-  # # Step 4: Create ZIP Archive
-  # package-zip:
-  #   runs-on: ubuntu-latest
-  #   needs: [build-windows, build-linux, convert-pdf] 
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-
-  #     - name: Download Windows exe
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: directory_indexer.exe
-  #         path: .
-
-  #     - name: Download Linux exe
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: directory_indexer-linux
-  #         path: .
-
-
-  #     - name: Download PDF
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: user-manual.pdf
-  #         path: .
-          
-  #     - name: Prepare Release Archive
-  #       run: |
-  #         echo "Creating release archive..."
-  #         mkdir directory_indexer-${GITHUB_REF##*/}  # Tag name as directory
-  #         cp directory_indexer.exe directory_indexer-${GITHUB_REF##*/}/directory_indexer.exe || true
-  #         cp directory_indexer-linux directory_indexer-${GITHUB_REF##*/}/directory_indexer-linux || true
-  #         cp user-manual.pdf directory_indexer-${GITHUB_REF##*/}/
-
-  #     - name: Install zip
-  #       run: sudo apt update && sudo apt install zip -y
-
-  #     - name: Create ZIP Archive
-  #       run: |
-  #         zip -r directory_indexer-${GITHUB_REF##*/}.zip directory_indexer-${GITHUB_REF##*/}
-
-  #     - name: List files in current directory
-  #       run: ls -alh
-
-  #     - name: Upload ZIP
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: directory_indexer-${GITHUB_REF##*/}.zip
-  #         path: directory_indexer-${GITHUB_REF##*/}.zip
-
-  # Step 5: Create GitHub Release and Upload Assets
+  # Create GitHub Release and Upload Assets
   create-release:
     runs-on: ubuntu-latest
-    needs: [build-windows, build-linux, convert-pdf]  # Ensure it runs after all other jobs
+    needs: [build-windows, build-linux, user-manual-pdf]  # Ensure it runs after all other jobs
+    permissions:
+      contents: write
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: .
+          merge-multiple: true
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          tag_name: ${{ github.ref }}  # Uses the tag name of the current commit
-          release_name: Release ${{ github.ref }}
-          body: "Release notes for version ${{ github.ref }}"
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Provide the token for authentication
-
-      - name: Upload Windows Executable to Release
-        uses: actions/upload-release-asset@v1
-        with:
-          url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/directory_indexer.exe
-          asset_name: directory_indexer.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload Linux Executable to Release
-        uses: actions/upload-release-asset@v1
-        with:
-          url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/directory_indexer
-          asset_name: directory_indexer-linux
-          asset_content_type: application/octet-stream
-
-      # - name: Upload ZIP Archive to Release
-      #   uses: actions/upload-release-asset@v1
-      #   with:
-      #     url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: directory_indexer-${GITHUB_REF##*/}.zip
-      #     asset_name: directory_indexer-${GITHUB_REF##*/}.zip
-      #     asset_content_type: application/zip
+          repository: alexis-massa/directory-indexer
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            directory_indexer.exe
+            directory_indexer-linux
+            user-manual.pdf
+          fail_on_unmatched_files: true
