@@ -1,3 +1,4 @@
+from datetime import datetime
 import tkinter as tk
 from tkinter import filedialog
 import os
@@ -5,6 +6,8 @@ from tkinter import messagebox
 import pandas as pd
 from settings import Settings  # Assuming Settings is in a separate file
 from exception_catcher import exception_catcher
+
+
 class DirectoryIndexUI:
     def __init__(self, root):
         self.root = root
@@ -67,11 +70,15 @@ class DirectoryIndexUI:
         allowed_extensions = set(self.settings.extensions.replace(" ", "").split(",")) if self.settings.extensions != ".*" else None
 
         data = []  # List to store directory index data
+        files_count = 0
+        folders_count = 0
 
         def traverse_directory(directory: str, level: int):
             """Recursively traverses the directory while maintaining order."""
+            nonlocal files_count, folders_count
             # Add the current folder
             data.append([os.path.basename(directory), directory, level, "Folder"])
+            folders_count += 1
 
             # Get directory contents
             try:
@@ -86,6 +93,7 @@ class DirectoryIndexUI:
                     # Filter by extensions
                     if allowed_extensions is None or any(full_path.lower().endswith(ext.lower()) for ext in allowed_extensions):
                         data.append([entry, full_path, level + 1, "File"])
+                        files_count += 1
 
             # Process subfolders
             for entry in entries:
@@ -98,13 +106,56 @@ class DirectoryIndexUI:
 
         # Convert to DataFrame and save to Excel
         df = pd.DataFrame(data, columns=["Name", "Path", "Sub-folder Level", "Type"])
+
+        # Now prepare the second sheet (Settings info)
+        settings_data = [
+            ["Input Directory", self.settings.in_directory],
+            ["File Extensions", self.settings.extensions],
+            ["Output Directory", self.settings.out_path],
+            ["Timestamp", datetime.now().strftime("%Y-%m-%d %H:%M:%S")],
+            ["Files Count", files_count],
+            ["Folders Count", folders_count],
+            ["Total Entries", files_count + folders_count],
+        ]
+
+        settings_df = pd.DataFrame(settings_data, columns=["Setting Name", "Value"])
+
+        # Excel writer to handle multiple sheets (use openpyxl engine)
         output_file = os.path.join(self.settings.out_path, "directory_index.xlsx")
-        df.to_excel(output_file, index=False)
+
+        with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
+            # Write the first sheet (index of files/folders)
+            df.to_excel(writer, sheet_name="Index", index=False)
+
+            # Write the second sheet (settings)
+            settings_df.to_excel(writer, sheet_name="Settings", index=False, header=False)
+
+            # Access the openpyxl workbook and sheets for formatting
+            workbook = writer.book
+
+            # Formatting for Settings sheet
+            settings_sheet = writer.sheets["Settings"]
+            settings_sheet.column_dimensions["A"].width = 25  # Adjust column width for Setting Name
+            settings_sheet.column_dimensions["B"].width = 40  # Adjust column width for Value
+
+            # Formatting for Index sheet
+            index_sheet = writer.sheets["Index"]
+            index_sheet.column_dimensions["A"].width = 30  # Adjust column width for Name
+            index_sheet.column_dimensions["B"].width = 50  # Adjust column width for Path
+            index_sheet.column_dimensions["C"].width = 20  # Adjust column width for Sub-folder Level
+            index_sheet.column_dimensions["D"].width = 15  # Adjust column width for Type
+
+            # Bold header formatting
+            from openpyxl.styles import Font
+
+            for cell in settings_sheet[1]:
+                cell.font = Font(bold=True)
+            for cell in index_sheet[1]:
+                cell.font = Font(bold=True)
 
         # Show success notification
         messagebox.showinfo("Success", f"Indexing complete.\nFile saved to: {output_file}")
         print(f"Indexing complete. File saved to: {output_file}")
-
 
 
 if __name__ == "__main__":
