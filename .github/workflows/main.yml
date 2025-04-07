@@ -9,7 +9,7 @@ on:
       - main  # If you want to run on PRs to the main branch
 
 jobs:
-  # Step 1: Build Windows Executable
+  # Build Windows Executable
   build-windows:
     runs-on: windows-latest
     steps:
@@ -33,7 +33,7 @@ jobs:
           name: directory_indexer.exe
           path: dist/directory_indexer.exe
 
-  # Step 2: Build Linux Executable
+  # Build Linux Executable
   build-linux:
     runs-on: ubuntu-latest  # Use Ubuntu runner for Linux
     steps:
@@ -57,7 +57,7 @@ jobs:
           name: directory_indexer-linux
           path: dist/directory_indexer-linux
 
-  # Step 3: Convert Markdown to PDF
+  # Convert Markdown to PDF
   user-manual-pdf:
     runs-on: ubuntu-latest
     steps:
@@ -79,10 +79,28 @@ jobs:
           name: user-manual.pdf
           path: user-manual.pdf
 
+  # Generate CHANGELOG
+  generate-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate CHANGELOG
+        run: |
+          pip install git-cliff
+          git-cliff -u --prepend CHANGELOG.md -t ${GITHUB_REF##*/}
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: CHANGELOG.md
+          path: CHANGELOG.md
+
   # Create GitHub Release and Upload Assets
   create-release:
     runs-on: ubuntu-latest
-    needs: [build-windows, build-linux, user-manual-pdf]  # Ensure it runs after all other jobs
+    needs: [build-windows, build-linux, user-manual-pdf, generate-changelog]
     permissions:
       contents: write
     steps:
@@ -100,6 +118,7 @@ jobs:
         with:
           repository: alexis-massa/directory-indexer
           token: ${{ secrets.GITHUB_TOKEN }}
+          body_path: CHANGELOG.md
           files: |
             directory_indexer.exe
             directory_indexer-linux
