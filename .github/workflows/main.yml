@@ -1,0 +1,126 @@
+name: Python Project CI
+
+on:
+  push:
+    tags:
+      - '*.*'  # Matches tags like '1.2', '1.3', etc.
+  pull_request:
+    branches:
+      - main  # If you want to run on PRs to the main branch
+
+jobs:
+  # Build Windows Executable
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install pyinstaller
+
+      - name: Build Executable
+        run: pyinstaller --onefile --noconsole --name directory_indexer src/directory_indexer.py
+
+      - name: Upload Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: directory_indexer.exe
+          path: dist/directory_indexer.exe
+
+  # Build Linux Executable
+  build-linux:
+    runs-on: ubuntu-latest  # Use Ubuntu runner for Linux
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyinstaller
+
+      - name: Build Executable
+        run: pyinstaller --onefile --name directory_indexer-linux src/directory_indexer.py
+
+      - name: Upload Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: directory_indexer-linux
+          path: dist/directory_indexer-linux
+
+  # Convert Markdown to PDF
+  user-manual-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install texlive-latex-recommended -y
+          sudo apt install pandoc -y
+
+      - name: Convert Markdown to PDF
+        run: pandoc --from=gfm --to=pdf -o user-manual.pdf user-manual.md
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-manual.pdf
+          path: user-manual.pdf
+
+  # Generate CHANGELOG
+  generate-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate CHANGELOG
+        run: |
+          pip install git-cliff
+          git-cliff -u -p CHANGELOG.md -t ${GITHUB_REF##*/}
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: CHANGELOG.md
+          path: CHANGELOG.md
+
+  # Create GitHub Release and Upload Assets
+  create-release:
+    runs-on: ubuntu-latest
+    needs: [build-windows, build-linux, user-manual-pdf, generate-changelog]
+    permissions:
+      contents: write
+    steps:
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: .
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          repository: alexis-massa/directory-indexer
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body_path: CHANGELOG.md
+          files: |
+            directory_indexer.exe
+            directory_indexer-linux
+            user-manual.pdf
+          fail_on_unmatched_files: true

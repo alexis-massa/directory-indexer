@@ -1,0 +1,10 @@
+altgraph==0.17.4
+git-cliff==2.8.0
+openpyxl==3.1.5
+packaging==24.2
+pyinstaller==6.11.1
+pyinstaller-hooks-contrib==2025.0
+pandas==2.2.3
+ruff==0.9.3
+setuptools==75.8.0
+xlsxwriter==3.2.2
