@@ -68,4 +68,3 @@
 ## License
 
 This tool is released under the MIT License — free to use, modify, and distribute with proper attribution.
->>>>>>> 2980c9d (feat: Index directory mechanic (#1))
