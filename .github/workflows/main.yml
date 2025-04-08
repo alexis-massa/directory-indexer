@@ -25,13 +25,13 @@ jobs:
         run: pip install pyinstaller
 
       - name: Build Executable
-        run: pyinstaller --onefile --noconsole src/directory_index_generator.py
+        run: pyinstaller --onefile --noconsole src/directory_indexer.py
 
       - name: Upload Executable
         uses: actions/upload-artifact@v4
         with:
-          name: directory_index_generator.exe
-          path: dist/directory_index_generator.exe
+          name: directory_indexer.exe
+          path: dist/directory_indexer.exe
 
   # Step 2: Build Linux Executable
   build-linux:
@@ -49,13 +49,13 @@ jobs:
         run: pip install pyinstaller
 
       - name: Build Executable
-        run: pyinstaller --onefile --name directory_index_generator src/directory_index_generator.py
+        run: pyinstaller --onefile --name directory_indexer src/directory_indexer.py
 
       - name: Upload Executable
         uses: actions/upload-artifact@v4
         with:
-          name: directory_index_generator-linux
-          path: dist/directory_index_generator
+          name: directory_indexer-linux
+          path: dist/directory_indexer
 
   # Step 3: Convert Markdown to PDF
   convert-pdf:
@@ -90,13 +90,13 @@ jobs:
   #     - name: Download Windows exe
   #       uses: actions/download-artifact@v4
   #       with:
-  #         name: directory_index_generator.exe
+  #         name: directory_indexer.exe
   #         path: .
 
   #     - name: Download Linux exe
   #       uses: actions/download-artifact@v4
   #       with:
-  #         name: directory_index_generator-linux
+  #         name: directory_indexer-linux
   #         path: .
 
 
@@ -109,17 +109,17 @@ jobs:
   #     - name: Prepare Release Archive
   #       run: |
   #         echo "Creating release archive..."
-  #         mkdir directory_index_generator-${GITHUB_REF##*/}  # Tag name as directory
-  #         cp directory_index_generator.exe directory_index_generator-${GITHUB_REF##*/}/directory_index_generator.exe || true
-  #         cp directory_index_generator-linux directory_index_generator-${GITHUB_REF##*/}/directory_index_generator-linux || true
-  #         cp user-manual.pdf directory_index_generator-${GITHUB_REF##*/}/
+  #         mkdir directory_indexer-${GITHUB_REF##*/}  # Tag name as directory
+  #         cp directory_indexer.exe directory_indexer-${GITHUB_REF##*/}/directory_indexer.exe || true
+  #         cp directory_indexer-linux directory_indexer-${GITHUB_REF##*/}/directory_indexer-linux || true
+  #         cp user-manual.pdf directory_indexer-${GITHUB_REF##*/}/
 
   #     - name: Install zip
   #       run: sudo apt update && sudo apt install zip -y
 
   #     - name: Create ZIP Archive
   #       run: |
-  #         zip -r directory_index_generator-${GITHUB_REF##*/}.zip directory_index_generator-${GITHUB_REF##*/}
+  #         zip -r directory_indexer-${GITHUB_REF##*/}.zip directory_indexer-${GITHUB_REF##*/}
 
   #     - name: List files in current directory
   #       run: ls -alh
@@ -127,8 +127,8 @@ jobs:
   #     - name: Upload ZIP
   #       uses: actions/upload-artifact@v4
   #       with:
-  #         name: directory_index_generator-${GITHUB_REF##*/}.zip
-  #         path: directory_index_generator-${GITHUB_REF##*/}.zip
+  #         name: directory_indexer-${GITHUB_REF##*/}.zip
+  #         path: directory_indexer-${GITHUB_REF##*/}.zip
 
   # Step 5: Create GitHub Release and Upload Assets
   create-release:
@@ -154,22 +154,22 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/directory_index_generator.exe
-          asset_name: directory_index_generator.exe
+          asset_path: dist/directory_indexer.exe
+          asset_name: directory_indexer.exe
           asset_content_type: application/octet-stream
 
       - name: Upload Linux Executable to Release
         uses: actions/upload-release-asset@v1
         with:
           url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/directory_index_generator
-          asset_name: directory_index_generator-linux
+          asset_path: dist/directory_indexer
+          asset_name: directory_indexer-linux
           asset_content_type: application/octet-stream
 
       # - name: Upload ZIP Archive to Release
       #   uses: actions/upload-release-asset@v1
       #   with:
       #     url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: directory_index_generator-${GITHUB_REF##*/}.zip
-      #     asset_name: directory_index_generator-${GITHUB_REF##*/}.zip
+      #     asset_path: directory_indexer-${GITHUB_REF##*/}.zip
+      #     asset_name: directory_indexer-${GITHUB_REF##*/}.zip
       #     asset_content_type: application/zip

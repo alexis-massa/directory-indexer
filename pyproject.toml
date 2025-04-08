@@ -1,5 +1,5 @@
 [project]
-name = "directory-index-generator"
+name = "directory-indexer"
 version = "0.0"
 description = "A Python program to create an index for a directory, listing all files and subfolders."
 authors = [

@@ -1,1 +1,1 @@
-# Directory Index Generator
+# Directory Indexer

@@ -1,0 +1,73 @@
+2025-04-03 09:18:50 - ERROR - Exception in index_directory: 'Settings'
+Traceback (most recent call last):
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\exception_catcher.py", line 18, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\directory_index_generator.py", line 137, in index_directory
+    settings_sheet = writer.sheets['Settings']
+                     ~~~~~~~~~~~~~^^^^^^^^^^^^
+KeyError: 'Settings'
+2025-04-03 09:23:10 - ERROR - Exception in index_directory: tuple indices must be integers or slices, not Cell
+Traceback (most recent call last):
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\exception_catcher.py", line 18, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\directory_index_generator.py", line 152, in index_directory
+    info_sheet['A'][cell].font = Font(bold=True)
+    ~~~~~~~~~~~~~~~^^^^^^
+TypeError: tuple indices must be integers or slices, not Cell
+2025-04-03 09:28:25 - ERROR - Exception in index_directory: <class 'openpyxl.styles.cell_style.CellStyle'>.alignment should be <class 'openpyxl.styles.alignment.Alignment'> but value is <class 'openpyxl.styles.fonts.Font'>
+Traceback (most recent call last):
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\exception_catcher.py", line 18, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\directory_index_generator.py", line 127, in index_directory
+    with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
+         ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\.venv_win\Lib\site-packages\pandas\io\excel\_base.py", line 1353, in __exit__
+    self.close()
+    ~~~~~~~~~~^^
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\.venv_win\Lib\site-packages\pandas\io\excel\_base.py", line 1357, in close
+    self._save()
+    ~~~~~~~~~~^^
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\.venv_win\Lib\site-packages\pandas\io\excel\_openpyxl.py", line 110, in _save
+    self.book.save(self._handles.handle)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\.venv_win\Lib\site-packages\openpyxl\workbook\workbook.py", line 386, in save
+    save_workbook(self, filename)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\.venv_win\Lib\site-packages\openpyxl\writer\excel.py", line 294, in save_workbook
+    writer.save()
+    ~~~~~~~~~~~^^
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\.venv_win\Lib\site-packages\openpyxl\writer\excel.py", line 275, in save
+    self.write_data()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\.venv_win\Lib\site-packages\openpyxl\writer\excel.py", line 84, in write_data
+    stylesheet = write_stylesheet(self.workbook)
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\.venv_win\Lib\site-packages\openpyxl\styles\stylesheet.py", line 264, in write_stylesheet
+    xf.alignment = wb._alignments[style.alignmentId]
+    ^^^^^^^^^^^^
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\.venv_win\Lib\site-packages\openpyxl\descriptors\base.py", line 46, in __set__
+    raise TypeError(msg)
+TypeError: <class 'openpyxl.styles.cell_style.CellStyle'>.alignment should be <class 'openpyxl.styles.alignment.Alignment'> but value is <class 'openpyxl.styles.fonts.Font'>
+2025-04-03 09:53:16 - ERROR - Exception in index_directory: 'str' object has no attribute 'copy'
+Traceback (most recent call last):
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\exception_catcher.py", line 18, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\directory_index_generator.py", line 150, in index_directory
+    index_sheet["B"][cell].alignment = index_sheet["B"][cell].style.copy(alignment=Alignment(horizontal="right"))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'copy'
+2025-04-03 09:54:36 - ERROR - Exception in index_directory: 'str' object has no attribute 'copy'
+Traceback (most recent call last):
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\exception_catcher.py", line 18, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\directory_index_generator.py", line 150, in index_directory
+    index_sheet["B"][cell].style = index_sheet["B"][cell].style.copy(alignment=Alignment(horizontal="right"))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'copy'
+2025-04-03 09:55:01 - ERROR - Exception in index_directory: 'str' object has no attribute 'copy'
+Traceback (most recent call last):
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\exception_catcher.py", line 18, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\alexis.massa\LocalRepository\directory-index-generator\src\directory_index_generator.py", line 151, in index_directory
+    index_sheet["B"][cell].style = index_sheet["B"][cell].style.copy(alignment=Alignment(horizontal="right"))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'copy'
