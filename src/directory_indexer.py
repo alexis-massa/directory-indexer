@@ -55,14 +55,14 @@ class DirectoryIndexUI:
         )
 
         # Output Path
-        # Input Directory
-        tk.Label(frame, text="Input Directory:").pack(anchor="w", padx=10, pady=(10, 2))
-        self.out_path_var = tk.StringVar(value=self.settings.in_directory)
+        tk.Label(frame, text="Output Directory:").pack(anchor="w", padx=10, pady=(10, 2))
+        self.out_path_var = tk.StringVar(value=self.settings.out_path)
         out_path_frame = tk.Frame(frame)
         out_path_frame.pack(padx=10, fill="x")
         self.out_path_var = tk.Entry(out_path_frame, textvariable=self.out_path_var, width=50)
         self.out_path_var.pack(side="left", fill="x", expand=True)
-        tk.Button(out_path_frame, text="Browse", command=self.select_in_directory).pack(side="left", padx=5)
+        tk.Button(out_path_frame, text="Browse", command=self.select_out_directory).pack(side="left", padx=5)
+
 
         # Index Directory Button
         tk.Button(frame, text="Index Directory", command=self.index_directory).pack(padx=10, pady=2)
