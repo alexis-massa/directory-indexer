@@ -1,3 +1,4 @@
+from copy import copy
 from datetime import datetime
 import os
 import tkinter as tk
@@ -148,8 +149,10 @@ class DirectoryIndexUI:
             # Index
             for cell in index_sheet[1]:  # First row
                 cell.font = Font(bold=True)
-            for cell in range(len(index_sheet["B"])):  # Path column
-                index_sheet["B"][cell].alignment = index_sheet["B"][cell].alignment.copy(horizontal="right")
+            for cell in range(1, len(index_sheet["B"])):  # Path column
+                new_style = copy(index_sheet["B"][cell].alignment)
+                new_style.horizontal = 'right'
+                index_sheet["B"][cell].alignment = new_style
 
             # Infos
             for cell in range(len(info_sheet["A"])):  # First columun
