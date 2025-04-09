@@ -2,6 +2,7 @@ import os
 import re
 from typing import Optional, List
 
+
 class Settings:
     """A class to hold settings for the program"""
 
