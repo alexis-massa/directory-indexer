@@ -110,7 +110,6 @@ class DirectoryIndexUI:
 
             # Process files first
             for entry in entries:
-
                 if should_be_indexed(entry, self.settings):
                     full_path = os.path.join(directory, entry)
                     if os.path.isfile(full_path):
@@ -119,7 +118,6 @@ class DirectoryIndexUI:
 
             # Process subfolders after
             for entry in entries:
-
                 if should_be_indexed(entry, self.settings):
                     full_path = os.path.join(directory, entry)
                     if os.path.isdir(full_path):
@@ -198,6 +196,7 @@ def matches_patterns(base_name: str, patterns: list[str]) -> bool:
 def is_hidden(base_name: str) -> bool:
     return base_name.startswith(".")
 
+
 def should_be_indexed(base_name: str, settings: Settings) -> bool:
     """
     Check if the file should be indexed
@@ -232,6 +231,7 @@ def should_be_indexed(base_name: str, settings: Settings) -> bool:
         should_be_indexed = True
 
     return should_be_indexed
+
 
 if __name__ == "__main__":
     root = tk.Tk()
