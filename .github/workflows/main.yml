@@ -22,7 +22,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install pyinstaller
+        run: pip install -r dev-requirements.lock
 
       - name: Build Executable
         run: pyinstaller --onefile --noconsole --name directory_indexer src/directory_indexer.py
@@ -46,7 +46,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install pyinstaller
+        run: pip install -r dev-requirements.lock
 
       - name: Build Executable
         run: pyinstaller --onefile --name directory_indexer-linux src/directory_indexer.py
