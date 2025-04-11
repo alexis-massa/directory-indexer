@@ -59,8 +59,8 @@ class DirectoryIndexUI:
         self.out_path_var = tk.StringVar(value=self.settings.out_path)
         out_path_frame = tk.Frame(frame)
         out_path_frame.pack(padx=10, fill="x")
-        self.out_path_var = tk.Entry(out_path_frame, textvariable=self.out_path_var, width=50)
-        self.out_path_var.pack(side="left", fill="x", expand=True)
+        self.out_path_entry = tk.Entry(out_path_frame, textvariable=self.out_path_var, width=50)
+        self.out_path_entry.pack(side="left", fill="x", expand=True)
         tk.Button(out_path_frame, text="Browse", command=self.select_out_directory).pack(side="left", padx=5)
 
         # Index Directory Button
