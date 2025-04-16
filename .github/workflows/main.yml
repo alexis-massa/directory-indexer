@@ -89,7 +89,7 @@ jobs:
       - name: Generate CHANGELOG
         run: |
           pip install git-cliff
-          git-cliff -u -p CHANGELOG.md -t ${GITHUB_REF##*/}
+          git-cliff -u -p CHANGELOG.md -t "$(git describe --tags --abbrev=0)"..HEAD
 
       - name: Upload PDF
         uses: actions/upload-artifact@v4
